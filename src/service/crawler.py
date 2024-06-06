@@ -49,7 +49,7 @@ else:
 
 def login():
     DRIVER.get(X_LOGIN_URL)
-    sleep(8)
+    sleep(6)
     username_html = DRIVER.find_element(By.CLASS_NAME, "r-30o5oe")
     username_html.send_keys(X_USERNAME)
     username_html.send_keys(Keys.RETURN)
@@ -111,24 +111,32 @@ def track(keyword, bairro, cidade):
 
 
 def main():
-    login()
     hs_conn = MySQLConnection(MYSQL_DATABASE_HS)
     x_conn = MySQLConnection(MYSQL_DATABASE_X)
     residencias = hs_conn.get_residencias()
     hs_conn.close_connection()
-
+    print(residencias)
+    login()
+    print("FOI BUSCAR")
+    
     for residencia in residencias:
         id = residencia[0]
         bairro = residencia[1]
         cidade = residencia[2]
+        print("ENCONTROU RESIDENCIA")
 
         if id in IDS_IGNORE:
+            print("ENTROU NO IGNORE")
             continue
 
         for keyword in X_KEYWORDS:
             
             print(f"Buscando por: [{keyword}] [{id}] - [{bairro}], [{cidade}]")
             dados = track(keyword, bairro, cidade)
+
+            if dados == []:
+                print("Nenhum tweet encontrado.")
+                continue
             
             query = "INSERT INTO x_sentinel.tweet (nome, data_post, texto, is_palavrao, palavra_chave, residencia_id) VALUES"
             for dado in dados:

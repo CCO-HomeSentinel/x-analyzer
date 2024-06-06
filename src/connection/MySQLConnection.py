@@ -76,6 +76,6 @@ class MySQLConnection:
                 en.cidade
             FROM
 	            home_sentinel.residencia rs
-		    JOIN home_sentinel.endereco en ON en.residencia_id = rs.id WHERE rs.id IN (1, 2);"""
+		    JOIN home_sentinel.endereco en ON en.residencia_id = rs.id WHERE rs.id;"""
 
         return self.execute_select_query(query)

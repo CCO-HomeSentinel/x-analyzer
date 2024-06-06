@@ -41,7 +41,7 @@ def analisar(texto):
         elif tipo == 'IGNORAR':
             continue
         elif tipo == 'ERRO':
-            raise RuntimeError(f'Caractere inesperado: {valor}')
+            print(f'Caractere inesperado: {valor}')
         tokens.append((tipo, valor))
     
     for _, valor in tokens:

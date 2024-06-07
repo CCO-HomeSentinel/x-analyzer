@@ -1,6 +1,6 @@
 
 # X Data Analysis Platform
-![Slide2](https://github.com/CCO-HomeSentinel/x-analyzer/assets/70069239/2df1aa0f-16f2-43f1-aadf-3deb1feb273e)
+![Slide1](https://github.com/CCO-HomeSentinel/x-analyzer/assets/70069239/462aa3b6-2690-48bf-a0b1-08fb57c8d0ad)
 
 
 ## Installation
@@ -17,7 +17,9 @@ To run this project, you will need to add the following environment variables to
 
 `MYSQL_PORT`
 
-`MYSQL_DATABASE`
+`MYSQL_DATABASE_HS`
+
+`MYSQL_DATABASE_X`
 
 `MYSQL_USERNAME`
 
@@ -27,13 +29,23 @@ To run this project, you will need to add the following environment variables to
 
 `ENABLE_LOGS`
 
-`SECRET_KEY`
+`DRIVER_GUI`
 
-`JWT_SECRET_KEY`
+`X_USERNAME`
 
-`JWT_ALGORITHM`
+`X_PASSWORD`
 
-`JWT_TIME`
+`X_KEYWORDS`
+
+`X_LOGIN_URL`
+
+`X_SEARCH_URL`
+
+`X_SCROLL_LIMIT`
+
+`IDS_IGNORE`
+
+`BAD_WORDS`
 
 
 

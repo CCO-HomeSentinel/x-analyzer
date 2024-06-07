@@ -13,7 +13,6 @@ def remover_acentuacoes(texto):
 BAD_WORDS = os.getenv("BAD_WORDS").split(",")
 BAD_WORDS = [remover_acentuacoes(p).lower() for p in BAD_WORDS]
 
-# Definindo os padrões para os tokens
 especificacoes_tokens = [
     ('NUMERO',   r'\d+(\.\d*)?'),   # Números inteiros ou decimais
     ('UNIDADE',  r'[°C|%|Pa]'),     # Unidades de medida
@@ -41,7 +40,7 @@ def analisar(texto):
         elif tipo == 'IGNORAR':
             continue
         elif tipo == 'ERRO':
-            print(f'Caractere inesperado: {valor}')
+            continue
         tokens.append((tipo, valor))
     
     for _, valor in tokens:

@@ -8,10 +8,11 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 from dotenv import load_dotenv
-import lexer
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from connection.MySQLConnection import MySQLConnection
+from config.logger import logger
+from . import lexer
 
 load_dotenv()
 
@@ -75,7 +76,7 @@ def track(keyword, bairro, cidade):
 
     for down in range(X_SCROLL_LIMIT):
         DRIVER.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        sleep(3)
+        sleep(6)
         soup = BeautifulSoup(DRIVER.page_source, "html.parser")
         bloco = soup.find_all("article", {"role": "article"})
 
@@ -105,37 +106,49 @@ def track(keyword, bairro, cidade):
                     "text": text if text else "N/A",
                 })
         except Exception as e:
-            print(f"Erro: {e}")
+            logger.log("info", f"Erro: {e}")
 
     return data['tweets']
 
 
-def main():
+def process():
+    logger.log("info", "Iniciando crawler.")
+
     hs_conn = MySQLConnection(MYSQL_DATABASE_HS)
-    x_conn = MySQLConnection(MYSQL_DATABASE_X)
-    residencias = hs_conn.get_residencias()
-    hs_conn.close_connection()
-    print(residencias)
-    login()
-    print("FOI BUSCAR")
+    logger.log("info", f"Conexão com o banco de dados [{MYSQL_DATABASE_HS}] estabelecida.")
     
+    x_conn = MySQLConnection(MYSQL_DATABASE_X)
+    logger.log("info", f"Conexão com o banco de dados [{MYSQL_DATABASE_X}] estabelecida.")
+
+    residencias = hs_conn.get_residencias()
+    logger.log("info", f"Encontradas [{len(residencias)}] residências")
+
+    hs_conn.close_connection()
+    
+    try:
+        login()
+        logger.log("info", "Login efetuado com sucesso.")
+    except Exception as e:
+        logger.log("error", f"Erro ao efetuar login: {e}")
+        x_conn.close_connection()
+        DRIVER.close()
+        return
+
     for residencia in residencias:
         id = residencia[0]
         bairro = residencia[1]
         cidade = residencia[2]
-        print("ENCONTROU RESIDENCIA")
 
         if id in IDS_IGNORE:
-            print("ENTROU NO IGNORE")
             continue
 
         for keyword in X_KEYWORDS:
             
-            print(f"Buscando por: [{keyword}] [{id}] - [{bairro}], [{cidade}]")
+            logger.log("info", f"Buscando por: [{keyword}] [{id}] - [{bairro}], [{cidade}]")
             dados = track(keyword, bairro, cidade)
+            logger.log("info", f"Encontrados [{len(dados)}] tweets.")
 
             if dados == []:
-                print("Nenhum tweet encontrado.")
                 continue
             
             query = "INSERT INTO x_sentinel.tweet (nome, data_post, texto, is_palavrao, palavra_chave, residencia_id) VALUES"
@@ -150,9 +163,6 @@ def main():
             query = query[:-1] + ";"    
             x_conn.execute_insert(query)
 
+    logger.log("info", "Crawler finalizado.")
     x_conn.close_connection()
     DRIVER.close()
-
-
-if __name__ == "__main__":
-    main()

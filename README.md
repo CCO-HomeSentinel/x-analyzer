@@ -29,21 +29,23 @@ To run this project, you will need to add the following environment variables to
 
 `ENABLE_LOGS`
 
-`DRIVER_GUI`
+`HEADLESS`
 
-`X_USERNAME`
+`USER`
 
-`X_PASSWORD`
-
-`X_KEYWORDS`
-
-`X_LOGIN_URL`
+`PASSWORD`
 
 `X_SEARCH_URL`
 
-`X_SCROLL_LIMIT`
+`X_SEARCH_FILTER`
 
-`IDS_IGNORE`
+`LIMIT_SCROLL`
+
+`KEYWORDS`
+
+`POSITIVE_WORDS`
+
+`NEGATIVE_WORDS`
 
 `BAD_WORDS`
 

@@ -6,6 +6,7 @@ from datetime import datetime
 from threading import Lock
 
 load_dotenv()
+
 ENABLE_LOGS = os.getenv("ENABLE_LOGS").lower() == "true"
 INTERVALO_BACKUP_LOGGER = int(os.getenv("INTERVALO_BACKUP_LOGGER", 7))
 

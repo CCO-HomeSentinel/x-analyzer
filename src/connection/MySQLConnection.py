@@ -1,85 +1,72 @@
-import os
-import sys
-from sqlalchemy import create_engine, text
+import mysql.connector
 from dotenv import load_dotenv
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+import os
 from config.logger import logger
 
 load_dotenv()
 
-MYSQL_HOST = os.getenv("MYSQL_HOST")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT"))
-MYSQL_USERNAME = os.getenv("MYSQL_USERNAME")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+HOST = os.environ.get('MYSQL_HOST')
+USERNAME = os.environ.get('MYSQL_USER')
+PASSWORD = os.environ.get('MYSQL_PASSWORD')
+DATABASE_HS = os.environ.get('MYSQL_DATABASE_HS')
+DATABASE_X = os.environ.get('MYSQL_DATABASE_X')
 
+class MySQLConnector:
+    def __init__(self, is_x_db = False):
+        logger.log("info", f"Conexão com MySQL setada com o bannco de dados: {DATABASE_X if is_x_db else DATABASE_HS}")
+        self.host = HOST
+        self.username = USERNAME
+        self.password = PASSWORD
+        self.database = DATABASE_X if is_x_db else DATABASE_HS
+        self.connection = None
+        self.cursor = None
 
-class MySQLConnection:
-    def __init__(self, database):
-        self.database = database
+    def connect(self):
         try:
-            self.engine = create_engine(
-                f"mysql://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@"
-                f"{MYSQL_HOST}:{MYSQL_PORT}/{database}"
+            self.connection = mysql.connector.connect(
+                host=self.host,
+                user=self.username,
+                password=self.password,
+                database=self.database
             )
 
-        except Exception as e:
-            logger.log("info", f"Erro ao conectar com o banco de dados. {e}")
+            if self.connection.is_connected():
+                self.cursor = self.connection.cursor()
+                logger.log("info", "Conexão feita com sucesso")
+        except mysql.connector.Error as error:
+            logger.log("error", f"Ocorreu um erro ao se conectar com o banco de dados: {error}")
 
-
-    def execute_insert(self, query):
-        try:
-            with self.engine.connect() as connection:
-                connection.execute(text(query))
-                connection.commit()
-                logger.log("info", f"Query de insert executada com sucesso.")
-        except Exception as e:
-            logger.log("error", "Erro ao executar query de insert. {e}")
-
-
-    def get_connection(self):
-        return self.engine.connect()
-    
-
-    def close_connection(self):
-        self.engine.dispose()
-        logger.log("info", f"Conexão com o banco de {self.database} dados encerrada.")
-
-
-    def return_dict(self, obj):
-        return {col.name: getattr(obj, col.name) for col in obj.__table__.columns}
-
-
-    def execute_select_query(self, query):
-        try:
-            with self.engine.connect() as connection:
-                result = connection.execute(text(query))
-                results = result.fetchall()
-                return results
-        except Exception as e:
-            logger.log("error", f"Erro ao executar query de select. {e}")
-            return []
-
-
-    def execute_single_select_query(self, query):
-        try:
-            with self.engine.connect() as connection:
-                result = connection.execute(text(query))
-                results = result.fetchone()
-                return results
-        except Exception as e:
-            logger.log("error", f"Erro ao executar query de select. {e}")
-            return []
-
+    def save_tweets(self, tweets):
+        if self.database == DATABASE_X:
+            tweet_data = [(tweet.nome, tweet.texto, tweet.data_post, tweet.palavra_chave, tweet.is_palavrao, tweet.residencia_id, tweet.sentiment) for tweet in tweets]
+            insert_query = "INSERT INTO tweet (nome, texto, data_post, palavra_chave, is_palavrao, residencia_id, sentiment) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            self.cursor.executemany(insert_query, tweet_data)
+            self.connection.commit()
+            logger.log("info", "Tweets salvados com sucesso")
 
     def get_residencias(self):
-        query = """
-            SELECT 
-	            rs.id,
-                en.bairro,
-                en.cidade
-            FROM
-	            home_sentinel.residencia rs
-		    JOIN home_sentinel.endereco en ON en.residencia_id = rs.id WHERE rs.id;"""
+        if self.database == DATABASE_HS:
+            get_query = """
+                SELECT 
+                    rs.id,
+                    en.bairro,
+                    en.cidade
+                FROM
+                    home_sentinel.residencia rs
+                JOIN home_sentinel.endereco en ON en.residencia_id = rs.id WHERE rs.id;"""
+            
+            self.cursor.execute(get_query)
+            logger.log("info", "Residências buscadas com sucesso")
+            return self.cursor.fetchall()
+        
+        return None
 
-        return self.execute_select_query(query)
+
+    def close(self):
+        try:
+            if self.connection.is_connected():
+                self.cursor.close()
+                self.connection.close()
+                logger.log("info", "Conexão com o banco de dados fechada")
+        except mysql.connector.Error as error:
+            logger.log("error", f"Ocorreu um erro ao fechar a conexão com o banco de dados")

@@ -1,5 +1,5 @@
 from selenium.webdriver.common.by import By
-from lib.Selenium import WebDriverManager
+from selenium import WebDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from datetime import datetime
 import os

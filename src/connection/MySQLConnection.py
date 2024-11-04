@@ -50,10 +50,10 @@ class MySQLConnector:
                 SELECT 
                     rs.id,
                     en.bairro,
-                    en.cidade
+                    ci.cidade
                 FROM
                     home_sentinel.residencia rs
-                JOIN home_sentinel.endereco en ON en.residencia_id = rs.id WHERE rs.id;"""
+                JOIN home_sentinel.endereco en ON en.residencia_id = rs.id WHERE rs.id JOIN home_sentinel.cidade ci ON ci.id = en.cidade_id"""
             
             self.cursor.execute(get_query)
             logger.log("info", "Residências buscadas com sucesso")
@@ -70,3 +70,5 @@ class MySQLConnector:
                 logger.log("info", "Conexão com o banco de dados fechada")
         except mysql.connector.Error as error:
             logger.log("error", f"Ocorreu um erro ao fechar a conexão com o banco de dados")
+        
+        

@@ -46,7 +46,7 @@ def main():
 
 
     df = pd.DataFrame(data)
-    df.to_csv("assets/tweets.csv", index=False)
+    df.to_csv("tweets.csv", index=False)
 
     # x_conn = MySQLConnector(is_x_db=True)
     # x_conn.connect()

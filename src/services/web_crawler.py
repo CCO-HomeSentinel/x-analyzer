@@ -1,4 +1,4 @@
-import selenium.webdriver as webdriver
+from lib.Selenium import WebDriverManager
 import time
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -23,22 +23,12 @@ logged_in = False
 
 def start_driver():
     global driver
-    
-    chrome_options = Options()
-    # chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.add_argument("--start-maximized")
-    
-    driver = webdriver.Chrome(chrome_options)
-    
+    driver = WebDriverManager()
     logger.log("info", "Driver iniciado com sucesso")
 
-def get_tweets(residencia_id, bairro, cidade):
+def get_tweets(residencia_id, cidade):
     keyword_list = " OR ".join(KEYWORDS)
-    query = f"{bairro} {cidade} ({keyword_list})"
+    query = f"{cidade} ({keyword_list})"
     logger.log("info", f"Iniciando buscas - query: {query}")
     url_search = f'{SEARCH_URL}{query}{SEARCH_FILTER}'
     driver.open_url(url_search)
@@ -75,7 +65,7 @@ def get_tweets(residencia_id, bairro, cidade):
 
         new_height = _scroll_and_load_tweets(driver, last_height)
 
-        # time.sleep(5)
+        time.sleep(10)
         
         if new_height == last_height:
             break

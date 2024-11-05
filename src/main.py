@@ -16,9 +16,8 @@ def main():
 
     for residencia in residencias:
         id = residencia[0]
-        bairro = residencia[1]
-        cidade = residencia[2]
-        tweets.extend(get_tweets(id, bairro, cidade))
+        cidade = residencia[1]
+        tweets.extend(get_tweets(id, cidade))
 
     close_driver()
 

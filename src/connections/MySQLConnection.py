@@ -14,8 +14,7 @@ DATABASE_X = os.environ.get('MYSQL_DATABASE_X')
 
 class MySQLConnector:
     def __init__(self, is_x_db=False):
-        logger.log("info", f"Conexão com MySQL setada com o bannco de dados: {
-                   DATABASE_X if is_x_db else DATABASE_HS}")
+        logger.log("info", f"Conexão com MySQL setada com o bannco de dados: {DATABASE_X if is_x_db else DATABASE_HS}")
         self.host = HOST
         self.username = USERNAME
         self.password = PASSWORD
@@ -41,8 +40,7 @@ class MySQLConnector:
 
     def save_tweets(self, tweets):
         if self.database == DATABASE_X:
-            tweet_data = [(tweet.nome, tweet.texto, tweet.data_post, tweet.palavra_chave,
-                           tweet.is_palavrao, tweet.residencia_id, tweet.sentiment) for tweet in tweets]
+            tweet_data = [(tweet.nome, tweet.texto, tweet.data_post, tweet.palavra_chave, tweet.is_palavrao, tweet.residencia_id, tweet.sentiment) for tweet in tweets]
             insert_query = "INSERT INTO tweet (nome, texto, data_post, palavra_chave, is_palavrao, residencia_id, sentiment) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             self.cursor.executemany(insert_query, tweet_data)
             self.connection.commit()
@@ -53,14 +51,13 @@ class MySQLConnector:
             get_query = """
                 SELECT 
                     rs.id,
-                    en.bairro,
                     ci.nome
                 FROM
                     home_sentinel.residencia rs
                 JOIN 
-                    home_sentinel.endereco en ON en.id = rs.id 
+                    home_sentinel.endereco en ON en.id = rs.endereco_id 
                 JOIN 
-                    home_sentinel.cidade ci ON ci.id = en.id;"""
+                    home_sentinel.cidade ci ON ci.id = en.cidade_id;"""
             self.cursor.execute(get_query)
             logger.log("info", "Residências buscadas com sucesso")
             return self.cursor.fetchall()

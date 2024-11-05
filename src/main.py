@@ -1,6 +1,6 @@
 from services.web_crawler import get_tweets, start_driver, close_driver
 from services.text_process import analyze
-from connection.MySqlConnection import MySQLConnector
+from connections.MySQLConnection import MySQLConnector
 from config.logger import logger
 import pandas as pd
 
@@ -46,7 +46,7 @@ def main():
 
 
     df = pd.DataFrame(data)
-    df.to_csv("assets/tweets.csv", index=False)
+    df.to_csv("tweets.csv", index=False)
 
     # x_conn = MySQLConnector(is_x_db=True)
     # x_conn.connect()

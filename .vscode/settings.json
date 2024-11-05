@@ -1,0 +1,5 @@
+{
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.pythonPath": "${workspaceFolder}/venv/bin/python",
+    "python.analysis.extraPaths": ["${workspaceFolder}/src"]
+}

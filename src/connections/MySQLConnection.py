@@ -3,13 +3,15 @@ from dotenv import load_dotenv
 import os
 from config.logger import logger
 
-load_dotenv()
+load_dotenv(override=True)
 
 HOST = os.environ.get('MYSQL_HOST')
 USERNAME = os.environ.get('MYSQL_USER')
 PASSWORD = os.environ.get('MYSQL_PASSWORD')
 DATABASE_HS = os.environ.get('MYSQL_DATABASE_HS')
 DATABASE_X = os.environ.get('MYSQL_DATABASE_X')
+
+print(HOST)
 
 class MySQLConnector:
     def __init__(self, is_x_db = False):
@@ -50,10 +52,13 @@ class MySQLConnector:
                 SELECT 
                     rs.id,
                     en.bairro,
-                    ci.cidade
+                    ci.nome
                 FROM
                     home_sentinel.residencia rs
-                JOIN home_sentinel.endereco en ON en.residencia_id = rs.id WHERE rs.id JOIN home_sentinel.cidade ci ON ci.id = en.cidade_id"""
+                JOIN 
+                    home_sentinel.endereco en ON en.id = rs.id 
+                JOIN 
+                    home_sentinel.cidade ci ON ci.id = en.id;"""
             
             self.cursor.execute(get_query)
             logger.log("info", "Residências buscadas com sucesso")

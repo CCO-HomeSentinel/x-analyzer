@@ -1,6 +1,6 @@
 from services.web_crawler import get_tweets, start_driver, close_driver
 from services.text_process import analyze
-from connection.MySqlConnection import MySQLConnector
+from connections.MySQLConnection import MySQLConnector
 from config.logger import logger
 import pandas as pd
 

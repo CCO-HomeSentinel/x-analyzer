@@ -1,5 +1,5 @@
 from selenium.webdriver.common.by import By
-from selenium import WebDriverManager
+import selenium.webdriver as webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from datetime import datetime
 import os
@@ -21,7 +21,7 @@ logged_in = False
 
 def start_driver():
     global driver
-    driver = WebDriverManager()
+    driver = webdriver()
     logger.log("info", "Driver iniciado com sucesso")
 
 def get_tweets(residencia_id, bairro, cidade):

@@ -26,7 +26,7 @@ def start_driver():
     driver = WebDriverManager()
     logger.log("info", "Driver iniciado com sucesso")
 
-def get_tweets(residencia_id, cidade):
+def get_tweets(cidade):
     keyword_list = " OR ".join(KEYWORDS)
     query = f"{cidade} ({keyword_list})"
     logger.log("info", f"Iniciando buscas - query: {query}")
@@ -57,7 +57,7 @@ def get_tweets(residencia_id, cidade):
                     id = new_tweet.id
                     tweets_ids.append(id)
 
-                    tweet = Tweet(nome, texto, data_post, residencia_id, id)
+                    tweet = Tweet(nome, texto, data_post, cidade, id)
                     tweets.append(tweet)
                 except Exception as ex:
                     cont_erros += 1
@@ -65,7 +65,7 @@ def get_tweets(residencia_id, cidade):
 
         new_height = _scroll_and_load_tweets(driver, last_height)
 
-        time.sleep(10)
+        time.sleep(15)
         
         if new_height == last_height:
             break

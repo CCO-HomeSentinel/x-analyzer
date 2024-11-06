@@ -8,16 +8,15 @@ def main():
     logger.log("info", "Iniciando web crawler")
     hs_conn = MySQLConnector()
     hs_conn.connect()
-    residencias = hs_conn.get_residencias()
+    cidades = hs_conn.get_cidades()
     hs_conn.close()
+    # cidades = pd.read_csv("src/assets/regiao_populosa_sp.csv")["nome"].tolist()
 
     tweets = []
     start_driver()
 
-    for residencia in residencias:
-        id = residencia[0]
-        cidade = residencia[1]
-        tweets.extend(get_tweets(id, cidade))
+    for cidade in cidades:
+        tweets.extend(get_tweets(cidade))
 
     close_driver()
 
@@ -28,7 +27,6 @@ def main():
         tweet.is_palavrao = is_palavrao
         tweet.palavra_chave = palavra_chave
 
-
     data = [
     {
         "nome": tweet.nome,
@@ -36,7 +34,7 @@ def main():
         "data_post": tweet.data_post,
         "palavra_chave": tweet.palavra_chave,
         "is_palavrao": tweet.is_palavrao,
-        "residencia_id": tweet.residencia_id,
+        "cidade": tweet.cidade,
         "sentiment": tweet.sentiment,
         "id_ref": tweet.id_ref
     }

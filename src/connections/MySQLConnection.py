@@ -46,18 +46,13 @@ class MySQLConnector:
             self.connection.commit()
             logger.log("info", "Tweets salvados com sucesso")
 
-    def get_residencias(self):
+    def get_cidades(self):
         if self.database == DATABASE_HS:
             get_query = """
                 SELECT 
-                    rs.id,
                     ci.nome
                 FROM
-                    home_sentinel.residencia rs
-                JOIN 
-                    home_sentinel.endereco en ON en.id = rs.endereco_id 
-                JOIN 
-                    home_sentinel.cidade ci ON ci.id = en.cidade_id;"""
+                    home_sentinel.cidade ci;"""
             self.cursor.execute(get_query)
             logger.log("info", "Residências buscadas com sucesso")
             return self.cursor.fetchall()
